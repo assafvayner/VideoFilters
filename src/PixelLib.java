@@ -287,6 +287,12 @@ public class PixelLib {
         // no return necessary because we just changed the values in arr
     }
 
+    public static void fill1dArray(short[] vals, int[] arr){
+        for (int i = 0; i < vals.length; i++) {
+            arr[i] = shortToRGBGrey(vals[i]);
+        }
+    }
+
     private static int shortToRGBGrey(short val) {
         int num = OPAQUE_ALPHA_VAL;
         num = (num << 8) + val;
