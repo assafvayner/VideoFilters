@@ -19,6 +19,7 @@ public class FilterView extends PApplet {
 
     private PixelFilter filter;
     private DrawableFilter drawingLayer;
+    private SpecialFilter specialFilter;
 
     public void settings() {
         size(WEBCAM_WIDTH * 2, WEBCAM_HEIGHT);
@@ -78,41 +79,62 @@ public class FilterView extends PApplet {
     }
 
     private int[] runFilters(PImage frameToFilter) {
-        if (filter != null) return filter.filter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height);
+        if (specialFilter != null){
+            return specialFilter.specialFilter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height, this);
+        }else if (filter != null){
+            return filter.filter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height);
+        }
         return pixels;
     }
 
     public void keyReleased() {
         if (key == 'f') {
             this.filter = loadNewFilter();
+            this.specialFilter = null;
         }
 
         if (key == 'd') {
             this.drawingLayer = loadNewDrawingFilter();
         }
+
+        if(key == 's'){
+            this.specialFilter = loadNewSpecialFilter();
+        }
     }
 
-    private DrawableFilter loadNewDrawingFilter() {
-        String name = JOptionPane.showInputDialog("Type the name of your drawable filter class");
-        DrawableFilter f = null;
+    private SpecialFilter loadNewSpecialFilter() {
+        String name = JOptionPane.showInputDialog("Type the name of your special specialFilter class");
+        SpecialFilter f = null;
         try {
             Class c = Class.forName(name);
-            f = (DrawableFilter) c.newInstance();
+            f = (SpecialFilter) c.newInstance();
         } catch (Exception e) {
-            System.err.println("Something went wrong when loading your filter! " + e.getMessage());
+            System.err.println("Something went wrong when loading your specialFilter! " + e.getMessage());
         }
 
         return f;
     }
 
+    private DrawableFilter loadNewDrawingFilter() {
+        String name = JOptionPane.showInputDialog("Type the name of your drawable specialFilter class");
+        DrawableFilter f = null;
+        try {
+            Class c = Class.forName(name);
+            f = (DrawableFilter) c.newInstance();
+        } catch (Exception e) {
+            System.err.println("Something went wrong when loading your specialFilter! " + e.getMessage());
+        }
+        return f;
+    }
+
     private PixelFilter loadNewFilter() {
-        String name = JOptionPane.showInputDialog("Type the name of your filter class");
+        String name = JOptionPane.showInputDialog("Type the name of your specialFilter class");
         PixelFilter f = null;
         try {
             Class c = Class.forName(name);
             f = (PixelFilter)c.newInstance();
         } catch (Exception e) {
-            System.err.println("Something went wrong when loading your filter! " + e.getMessage());
+            System.err.println("Something went wrong when loading your specialFilter! " + e.getMessage());
         }
 
         return f;
