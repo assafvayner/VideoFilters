@@ -4,11 +4,11 @@ import processing.core.PApplet;
 import javax.swing.*;
 
 public class MouseRevealFilter implements SpecialFilter {
-    private boolean[][] seen = new boolean[FilterView.getWebcamHeight()][2*FilterView.getWebcamWidth()];
+    private boolean[][] seen = new boolean[FilterView.getWebcamHeight()][2 * FilterView.getWebcamWidth()];
     private final int BLACK = 0;
     private int delta;
 
-    public MouseRevealFilter(){
+    public MouseRevealFilter() {
         delta = Integer.parseInt(JOptionPane.showInputDialog("radius: "));
     }
 
@@ -17,7 +17,7 @@ public class MouseRevealFilter implements SpecialFilter {
         int[][] img = PixelLib.convertTo2dArray(pixels, width, height);
         for (int row = 0; row < height; row++) {
             for (int column = 0; column < width; column++) {
-                if(!seen[row][FilterView.getWebcamWidth() + column]){
+                if (!seen[row][FilterView.getWebcamWidth() + column]) {
                     img[row][column] = BLACK;
                 }
             }
@@ -28,16 +28,20 @@ public class MouseRevealFilter implements SpecialFilter {
 
     @Override
     public void specialDrawingFilter(PApplet window) {
-        if(window.mousePressed){
-            for (int i = window.mouseY - delta; i < window.mouseY + delta; i++) {
-                for (int j = window.mouseX - delta; j < window.mouseX + delta; j++) {
-                    seen[i][j] = true;
+        if (window.mousePressed) {
+            try {
+                for (int i = window.mouseY - delta; i < window.mouseY + delta; i++) {
+                    for (int j = window.mouseX - delta; j < window.mouseX + delta; j++) {
+                        seen[i][j] = true;
+                    }
                 }
+            } catch (ArrayIndexOutOfBoundsException e) {
             }
         }
 
-        if(window.key == 'x'){
-            seen = new boolean[FilterView.getWebcamHeight()][2*FilterView.getWebcamWidth()];
+
+        if (window.keyPressed) {
+            seen = new boolean[FilterView.getWebcamHeight()][2 * FilterView.getWebcamWidth()];
         }
     }
 }
