@@ -143,13 +143,13 @@ public class FilterView extends PApplet {
     }
 
     private PixelFilter loadNewFilter() {
-        String name = JOptionPane.showInputDialog("Type the name of your specialFilter class");
+        String name = JOptionPane.showInputDialog("Type the name of your filter class");
         PixelFilter f = null;
         try {
             Class c = Class.forName(name);
             f = (PixelFilter)c.newInstance();
         } catch (Exception e) {
-            System.err.println("Something went wrong when loading your specialFilter! " + e.getMessage());
+            System.err.println("Something went wrong when loading your filter! " + e.getMessage());
         }
 
         return f;

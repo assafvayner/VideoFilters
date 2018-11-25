@@ -34,7 +34,7 @@ public class PixelLib {
         // TODO: arg check not size 0
 
         ColorComponents1d out = new ColorComponents1d(w, h);
-        int length = h*w;
+        int length = h * w;
         int spot = 0;    // index into pix
 
         for (int r = 0; r < h; r++) {
@@ -76,8 +76,8 @@ public class PixelLib {
 
     public static ColorComponents1d getColorComponents1d(int[] rgbPixels, int w, int h) {
         ColorComponents1d out = new ColorComponents1d(h, w);
-        int length = w*h;
-        for (int i=0; i < length; i++) {
+        int length = w * h;
+        for (int i = 0; i < length; i++) {
             int num = rgbPixels[i];
             out.blue[i] = (short) (num & 255);
             num = num >> 8;
@@ -92,7 +92,7 @@ public class PixelLib {
     }
 
     public static int[] combineColorComponents(ColorComponents2d in) {
-        int  pixheight = in.height;
+        int pixheight = in.height;
         int pixwidth = in.width;
         int[] pixels = new int[pixwidth * pixheight];
 
@@ -106,6 +106,17 @@ public class PixelLib {
 
         return pixels;
     }
+
+    public static int[] combineColorComponents(ColorComponents1d in) {
+        int[] pixels = new int[in.height * in.width];
+
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = PixelLib.color(in.red[i], in.green[i], in.blue[i], in.alpha[i]);
+        }
+
+        return pixels;
+    }
+
 
     public static int[] combineColorComponents(short[] red, short[] green, short[] blue, short[] alpha) {
         // TODO: arg checking
@@ -163,7 +174,7 @@ public class PixelLib {
         num = num >> 8;
         int alpha = num & 255;
         int black = (red + green + blue) / 3;
-        return (short)black;
+        return (short) black;
     }
 
     public static int getOpaqueGreyValue(int color) {
@@ -258,7 +269,7 @@ public class PixelLib {
     }
 
     public static void fill1dArray(int[][] vals, int[] arr) {
-        if (arr.length != vals.length*vals[0].length) {
+        if (arr.length != vals.length * vals[0].length) {
             System.err.println("in fill1dArray: different number of elements in 2d and 1d arrays");
         }
 
@@ -273,7 +284,7 @@ public class PixelLib {
     }
 
     public static void fill1dArray(short[][] vals, int[] arr) {
-        if (arr.length != vals.length*vals[0].length) {
+        if (arr.length != vals.length * vals[0].length) {
             System.err.println("in fill1dArray: different number of elements in 2d and 1d arrays");
         }
 
@@ -287,7 +298,7 @@ public class PixelLib {
         // no return necessary because we just changed the values in arr
     }
 
-    public static void fill1dArray(short[] vals, int[] arr){
+    public static void fill1dArray(short[] vals, int[] arr) {
         for (int i = 0; i < vals.length; i++) {
             arr[i] = shortToRGBGrey(vals[i]);
         }
@@ -324,7 +335,7 @@ public class PixelLib {
         public ColorComponents1d(int width, int height) {
             this.width = width;
             this.height = height;
-            int length = width*height;
+            int length = width * height;
             red = new short[length];
             green = new short[length];
             blue = new short[length];
