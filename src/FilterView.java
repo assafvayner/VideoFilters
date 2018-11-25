@@ -13,6 +13,14 @@ public class FilterView extends PApplet {
     private static final int WEBCAM_WIDTH = 640;
     private static final int WEBCAM_HEIGHT = 480;
 
+    public static int getWebcamHeight(){
+        return WEBCAM_HEIGHT;
+    }
+
+    public static int getWebcamWidth(){
+        return WEBCAM_WIDTH;
+    }
+
     private Capture video;
     private PImage frame, filteredFrame, oldFilteredFrame;
     private boolean loading = false;
@@ -32,7 +40,7 @@ public class FilterView extends PApplet {
         // Start capturing the images from the camera
         video.start();
 
-        frameRate(5);
+        frameRate(10);
     }
 
     public void draw() {
@@ -43,6 +51,8 @@ public class FilterView extends PApplet {
 
                 if (drawingLayer != null) {
                     drawingLayer.drawingFilter(this);
+                }else if(specialFilter != null){
+                    specialFilter.specialDrawingFilter(this);
                 }
             } else if (oldFilteredFrame != null){
                 image(frame, 0, 0);
@@ -50,6 +60,8 @@ public class FilterView extends PApplet {
 
                 if (drawingLayer != null) {
                     drawingLayer.drawingFilter(this);
+                }else if(specialFilter != null){
+                    specialFilter.specialDrawingFilter(this);
                 }
             }
         }
@@ -80,7 +92,7 @@ public class FilterView extends PApplet {
 
     private int[] runFilters(PImage frameToFilter) {
         if (specialFilter != null){
-            return specialFilter.specialFilter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height, this);
+            return specialFilter.specialFilter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height);
         }else if (filter != null){
             return filter.filter(frameToFilter.pixels, frameToFilter.width, frameToFilter.height);
         }
@@ -95,10 +107,13 @@ public class FilterView extends PApplet {
 
         if (key == 'd') {
             this.drawingLayer = loadNewDrawingFilter();
+            this.specialFilter = null;
         }
 
         if(key == 's'){
             this.specialFilter = loadNewSpecialFilter();
+            this.filter = null;
+            this.drawingLayer = null;
         }
     }
 
