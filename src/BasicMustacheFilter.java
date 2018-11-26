@@ -3,8 +3,8 @@ import processing.core.PApplet;
 public class BasicMustacheFilter implements SpecialFilter {
 
     private int xpos = 0, ypos = 0;
-    private final int R = 195, G = 127, B = 125;
-    private final int threshold = 100;
+    private final int R = 154, G = 89, B = 90;
+    private final int threshold = 25;
     //private int count = 0, xSum = 0, ySum = 0;
 
 
@@ -38,6 +38,8 @@ public class BasicMustacheFilter implements SpecialFilter {
                 window.rect(xpos + FilterView.getWebcamWidth(), ypos, 100, 25);
                 xpos = 0;
                 ypos = 0;
+            }else{
+                window.clear();
             }
         }
     }
