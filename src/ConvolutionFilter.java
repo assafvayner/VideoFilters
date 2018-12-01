@@ -29,6 +29,7 @@ public class ConvolutionFilter implements PixelFilter {
         for (int r = 0; r < im.length - matrix.length; r++) {
             for (int c = 0; c < im[0].length - matrix[0].length; c++) {
                 sum = 0;
+
                 for (int i = 0; i < matrix.length; i++) {
                     for (int j = 0; j < matrix[0].length; j++) {
                         sum += im[r + i][c + j] * matrix[i][j];
