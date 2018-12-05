@@ -4,17 +4,23 @@ public class Cluster {
 
     private ArrayList<Point> points;
     private Point center;
-    private boolean centerFlag; //true means calculated
+
+    public Cluster() {
+        this.points = new ArrayList<>();
+        this.center = new Point((int)(Math.random()*FilterView.getWebcamWidth()),(int)(Math.random()*FilterView.getWebcamHeight()));
+    }
+
+    public Cluster(ArrayList<Point> points) {
+        this.points = points;
+        this.center = new Point((int)(Math.random()*FilterView.getWebcamWidth()),(int)(Math.random()*FilterView.getWebcamHeight()));
+    }
+
 
     public Point getCenter() {
-        if(!centerFlag){
-            reCalculateCenter();
-
-        }
         return center;
     }
 
-    private void reCalculateCenter() {
+    public void reCalculateCenter() {
         int xSum = 0, ySum = 0;
         for (Point p: this.points) {
             xSum += p.getX();
@@ -24,8 +30,6 @@ public class Cluster {
         ySum/=this.size(); //int division intentional
 
         this.center = new Point(xSum, ySum);
-
-        centerFlag = true;
     }
 
     public ArrayList<Point> getPoints() {
@@ -33,29 +37,22 @@ public class Cluster {
     }
 
     public void addPoint(Point p) {
-        this.centerFlag = false;
         this.points.add(p);
     }
 
+    public void remove(Point p){
+        this.points.remove(p);
+    }
+
     public void addPoints(ArrayList<Point> p) {
-        this.centerFlag = false;
         this.points.addAll(p);
     }
 
     public void clearPoints(){
-        this.centerFlag = false;
         this.points = new ArrayList<>();
     }
 
-    public Cluster() {
-        this.centerFlag = false;
-        this.points = new ArrayList<>();
-    }
 
-    public Cluster(ArrayList<Point> points) {
-        this.centerFlag = false;
-        this.points = points;
-    }
 
     public int size() {
         return this.points.size();

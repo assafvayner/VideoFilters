@@ -8,6 +8,14 @@ public class Point {
         this.y = y;
     }
 
+    public boolean equals(Point p){
+        return (p.getX() == this.x && p.getY() == this.y);
+    }
+
+    public double distanceToPoint(Point p){
+        return Math.sqrt((this.x - p.getX()*(this.x - p.getX())) + (this.y - p.getY()*(this.y - p.getY())));
+    }
+
     public String toString() {
         return "(" + x + ", " + y + ")";
     }

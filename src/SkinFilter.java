@@ -1,6 +1,4 @@
 import javax.swing.*;
-import java.util.ArrayList;
-
 
 
 public class SkinFilter implements PixelFilter {
@@ -9,6 +7,7 @@ public class SkinFilter implements PixelFilter {
 
     private static short[][] out;
     private static short[][] out2;
+    int[] colors = {65535, 16776960, 16711935, 200, 16663850,16753920};
 
     private int kernelWeight;
 
@@ -19,10 +18,12 @@ public class SkinFilter implements PixelFilter {
     private double THRESHOLD = 80;
     private static final int THRESHOLD2 = 254;
 
-    private int numClusters = 2;
+    private int numClusters;
+
+    private Cluster[] clusters;
 
     public SkinFilter() {
-        //numClusters = Integer.parseInt( JOptionPane.showInputDialog("enter a number"));
+        numClusters = Integer.parseInt( JOptionPane.showInputDialog("enter a number"));
     }
 
     @Override
@@ -40,17 +41,77 @@ public class SkinFilter implements PixelFilter {
         performBlur(out, out2);
         performSecondThreshold(out2);
 
-        Cluster[] clusters = new Cluster[numClusters];
-        
-        // TODO:  Start your k-means code here
+        initializeClusters();
 
-        // as last step, loop over all points in all your clusters
-        //   change color values in img depending on what cluster each
-        //   point is part of.
-        // -----------------------------------------
+        kMeans();
 
+        PixelLib.ColorComponents2d fin = new PixelLib.ColorComponents2d(width,height);
         PixelLib.fill1dArray(out2, pixels);
+        colorPixelsBasedOnClusters(pixels);
+
         return pixels;
+    }
+
+    private void colorPixelsBasedOnClusters(int[] pixels) {
+        for (int c = 0; c < clusters.length; c++) {
+            for (Point p : clusters[c].getPoints()) {
+                pixels[p.getY()* FilterView.getWebcamHeight() + p.getX()] = colors[c];
+            }
+        }
+    }
+
+    private void kMeans() {
+        boolean flag = false;//true if no change in centers
+        Point curClusterCenter;
+        while(!flag){
+            flag = true;
+            for(int c = 0; c < clusters.length; c++){
+                for (Point p : clusters[c].getPoints()) {
+                    int minClusterIndex = 0;
+                    double minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
+                    for (int i = 1; i < clusters.length; i++) {
+                        if(p.distanceToPoint(clusters[i].getCenter()) < minDist){
+                            minClusterIndex = i;
+                            minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
+                        }
+                    }
+                    if(minClusterIndex != c){
+                        clusters[minClusterIndex].addPoint(p);
+                        clusters[c].remove(p);
+                    }
+                }
+            }
+
+            for (Cluster cluster : clusters) {
+                curClusterCenter = cluster.getCenter();
+                cluster.reCalculateCenter();
+                if (!curClusterCenter.equals(cluster.getCenter())) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void initializeClusters() {
+        clusters = new Cluster[numClusters];
+
+        for(int r = 0; r < out2.length; r++){
+            for (int c = 0; c < out2[0].length; c++){
+                if(out2[r][c] == 255){
+                    Point p = new Point(r,c);
+                    int minClusterIndex = 0;
+                    double minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
+                    for (int i = 1; i < clusters.length; i++) {
+                        if(p.distanceToPoint(clusters[i].getCenter()) < minDist){
+                            minClusterIndex = i;
+                            minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
+                        }
+                    }
+                    clusters[minClusterIndex].addPoint(p);
+                }
+            }
+        }
     }
 
     private void performSecondThreshold(short[][] out2) {
@@ -66,11 +127,11 @@ public class SkinFilter implements PixelFilter {
         }
     }
 
-    private int sumOf(short[][] kernal) {
+    private int sumOf(short[][] kernel) {
         int sum = 0;
-        for (int i = 0; i < kernal.length; i++) {
-            for (int j = 0; j < kernal[i].length; j++) {
-                sum += kernal[i][j];
+        for (int i = 0; i < kernel.length; i++) {
+            for (int j = 0; j < kernel[i].length; j++) {
+                sum += kernel[i][j];
             }
         }
 
