@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.util.ArrayList;
 
 
 public class SkinFilter implements PixelFilter {
@@ -24,6 +25,10 @@ public class SkinFilter implements PixelFilter {
 
     public SkinFilter() {
         numClusters = Integer.parseInt( JOptionPane.showInputDialog("enter a number"));
+        clusters = new Cluster[numClusters];
+        for (int i = 0; i < clusters.length; i++) {
+            clusters[i] = new Cluster();
+        }
     }
 
     @Override
@@ -45,19 +50,27 @@ public class SkinFilter implements PixelFilter {
 
         kMeans();
 
-        PixelLib.ColorComponents2d fin = new PixelLib.ColorComponents2d(width,height);
-        PixelLib.fill1dArray(out2, pixels);
-        colorPixelsBasedOnClusters(pixels);
+        PixelLib.ColorComponents2d image = new PixelLib.ColorComponents2d(width, height);
+        image.clear();
+        colorPixelsBasedOnClusters(image);
+
+        pixels = PixelLib.combineColorComponents(image);
 
         return pixels;
     }
 
-    private void colorPixelsBasedOnClusters(int[] pixels) {
+    private void colorPixelsBasedOnClusters(PixelLib.ColorComponents2d img) {
         for (int c = 0; c < clusters.length; c++) {
             for (Point p : clusters[c].getPoints()) {
-                pixels[p.getY()* FilterView.getWebcamHeight() + p.getX()] = colors[c];
+                changeColor(img, p.getX(), p.getY(), c);
             }
         }
+    }
+
+    private void changeColor(PixelLib.ColorComponents2d img, int row, int col, int colorIndex) {
+        img.red[row][col] = (short) (colors[colorIndex]/65536);
+        img.green[row][col] = (short)((colors[colorIndex]- img.red[row][col])/256);
+        img.blue[row][col] = (short)((colors[colorIndex]- img.red[row][col] - img.green[row][col]));
     }
 
     private void kMeans() {
@@ -66,16 +79,18 @@ public class SkinFilter implements PixelFilter {
         while(!flag){
             flag = true;
             for(int c = 0; c < clusters.length; c++){
-                for (Point p : clusters[c].getPoints()) {
+                ArrayList<Point> points = clusters[c].getPoints();
+                for (int pointIndex = 0; pointIndex < points.size(); pointIndex++) {
+                    Point p = points.get(pointIndex);
                     int minClusterIndex = 0;
                     double minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
                     for (int i = 1; i < clusters.length; i++) {
-                        if(p.distanceToPoint(clusters[i].getCenter()) < minDist){
+                        if (p.distanceToPoint(clusters[i].getCenter()) < minDist) {
                             minClusterIndex = i;
                             minDist = p.distanceToPoint(clusters[minClusterIndex].getCenter());
                         }
                     }
-                    if(minClusterIndex != c){
+                    if (minClusterIndex != c) {
                         clusters[minClusterIndex].addPoint(p);
                         clusters[c].remove(p);
                     }
@@ -94,8 +109,6 @@ public class SkinFilter implements PixelFilter {
     }
 
     private void initializeClusters() {
-        clusters = new Cluster[numClusters];
-
         for(int r = 0; r < out2.length; r++){
             for (int c = 0; c < out2[0].length; c++){
                 if(out2[r][c] == 255){

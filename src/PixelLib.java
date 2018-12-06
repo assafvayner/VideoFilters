@@ -325,6 +325,16 @@ public class PixelLib {
             blue = new short[height][width];
             alpha = new short[height][width];
         }
+
+        public void clear() {
+            for (int r = 0; r< red.length; r++){
+                for (int c = 0; c < red[0].length; c++) {
+                    red[r][c] = 0;
+                    green[r][c] = 0;
+                    blue[r][c] = 0;
+                }
+            }
+        }
     }
 
     // Data transfer object

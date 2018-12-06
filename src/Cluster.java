@@ -26,8 +26,8 @@ public class Cluster {
             xSum += p.getX();
             ySum += p.getY();
         }
-        xSum/=this.size(); //int division intentional
-        ySum/=this.size(); //int division intentional
+        xSum/= this.size(); //int division intentional
+        ySum/= this.size(); //int division intentional
 
         this.center = new Point(xSum, ySum);
     }
@@ -55,6 +55,9 @@ public class Cluster {
 
 
     public int size() {
+        if(this.points.size()== 0){
+            return 1;
+        }
         return this.points.size();
     }
 

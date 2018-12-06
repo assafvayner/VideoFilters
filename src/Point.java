@@ -13,7 +13,7 @@ public class Point {
     }
 
     public double distanceToPoint(Point p){
-        return Math.sqrt((this.x - p.getX()*(this.x - p.getX())) + (this.y - p.getY()*(this.y - p.getY())));
+        return Math.sqrt(((this.x - p.getX())*(this.x - p.getX())) + ((this.y - p.getY())*(this.y - p.getY())));
     }
 
     public String toString() {
