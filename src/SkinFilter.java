@@ -4,17 +4,17 @@ import java.util.ArrayList;
 
 public class SkinFilter implements PixelFilter {
 
-    final short[][] kernel = {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}};
+    private final short[][] kernel = {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}};
 
     private static short[][] out;
     private static short[][] out2;
-    int[] colors = {65535, 16776960, 16711935, 200, 16663850,16753920};
+    private int[] colors = {65535, 16776960, 16711935, 200, 16663850,16753920, 13125290,13132800,3328100,16448200};
 
     private int kernelWeight;
 
-    private short red = 186;
-    private short green = 108;
-    private short blue = 73;
+    private short red = 170;
+    private short green = 150;
+    private short blue = 130;
 
     private double THRESHOLD = 80;
     private static final int THRESHOLD2 = 254;
@@ -37,7 +37,7 @@ public class SkinFilter implements PixelFilter {
         PixelLib.ColorComponents2d img = PixelLib.getColorComponents2d(pixels2d);
 
         kernelWeight = sumOf(kernel);
-        if (out == null) {  // initialize to start, then re-use
+        if (out == null) { // initialize to start, then re-use
             out = new short[height][width];
             out2 = new short[height][width];
         }
@@ -54,9 +54,7 @@ public class SkinFilter implements PixelFilter {
         image.clear();
         colorPixelsBasedOnClusters(image);
 
-        pixels = PixelLib.combineColorComponents(image);
-
-        return pixels;
+        return PixelLib.combineColorComponents(image);
     }
 
     private void colorPixelsBasedOnClusters(PixelLib.ColorComponents2d img) {
@@ -109,6 +107,9 @@ public class SkinFilter implements PixelFilter {
     }
 
     private void initializeClusters() {
+        for(int c = 0; c < clusters.length; c++){
+            clusters[c].clearPoints();
+        }
         for(int r = 0; r < out2.length; r++){
             for (int c = 0; c < out2[0].length; c++){
                 if(out2[r][c] == 255){
@@ -142,9 +143,9 @@ public class SkinFilter implements PixelFilter {
 
     private int sumOf(short[][] kernel) {
         int sum = 0;
-        for (int i = 0; i < kernel.length; i++) {
-            for (int j = 0; j < kernel[i].length; j++) {
-                sum += kernel[i][j];
+        for (short[] aKernel : kernel) {
+            for (short anAKernel : aKernel) {
+                sum += anAKernel;
             }
         }
 
@@ -164,11 +165,11 @@ public class SkinFilter implements PixelFilter {
         }
     }
 
-    private int calculateOutputFrom(int r, int c, short[][] im, short[][] kernal) {
+    private int calculateOutputFrom(int r, int c, short[][] im, short[][] kernel) {
         int out = 0;
-        for (int i = 0; i < kernal.length; i++) {
-            for (int j = 0; j < kernal[i].length; j++) {
-                out += im[r+i][c+j]*kernal[i][j];
+        for (int i = 0; i < kernel.length; i++) {
+            for (int j = 0; j < kernel[i].length; j++) {
+                out += im[r+i][c+j]*kernel[i][j];
             }
         }
 
@@ -188,7 +189,7 @@ public class SkinFilter implements PixelFilter {
         }
     }
 
-    public double distance(short r1, short r2, short g1, short g2, short b1, short b2) {
+    private double distance(short r1, short r2, short g1, short g2, short b1, short b2) {
         int dr = r2-r1;
         int dg = g2-g1;
         int db = b2-b1;

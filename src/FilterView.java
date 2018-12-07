@@ -5,10 +5,7 @@ import processing.video.Capture;
 import javax.swing.*;
 import java.util.Arrays;
 
-/**
- * Side-by-side webcam view for image filtering
- * by David Dobervich
- */
+
 public class FilterView extends PApplet {
     private static final int WEBCAM_WIDTH = 640;
     private static final int WEBCAM_HEIGHT = 480;
